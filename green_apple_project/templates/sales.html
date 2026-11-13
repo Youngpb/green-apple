@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Акции — Зелёное яблоко</title><link rel="stylesheet" href="/static/css/style.css"></head>
+<body>
+<header><a class="logo" href="/">🍏 Зелёное яблоко</a><nav><a href="/">Каталог</a><a href="/sales">Акции</a><a href="/cart">Корзина ({{ cart_count }})</a>{% if user %}<a href="/orders">Мои заказы</a>{% if user.role == 'admin' %}<a href="/admin">Админ</a>{% endif %}<a href="/logout">Выйти</a>{% else %}<a href="/login">Войти</a>{% endif %}</nav></header>
+<main class="container"><h1>Акции и скидки</h1><p>Здесь собраны действующие промокоды и товары по сниженной цене.</p>
+<h2>Промокоды</h2><div class="promo-block">{% for promo in promos %}<div class="promo-card"><b>{{ promo.code }}</b><br>Скидка {{ promo.discount_percent }}% на заказ</div>{% else %}<div class="promo-card">Сейчас нет активных промокодов.</div>{% endfor %}</div>
+<h2>Товары со скидкой</h2><div class="grid">{% for p in products %}<article class="card"><span class="badge">Скидка</span><div class="img-plug">{% if p.image %}<img src="/static/{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% else %}🍏{% endif %}</div><h3>{{ p.name }}</h3><p>{{ p.weight or '' }}</p><div><span class="old-price">{{ '%.0f'|format(p.old_price) }} ₽</span></div><div class="price">{{ '%.2f'|format(p.price) }} ₽</div><p class="stock">{% if p.stock > 0 %}В наличии: {{ p.stock }}{% else %}Нет в наличии{% endif %}</p><form method="post" action="/cart/add/{{ p.id }}"><button class="btn" {% if p.stock <= 0 %}disabled{% endif %}>В корзину</button></form></article>{% else %}<p>Пока нет товаров со скидкой.</p>{% endfor %}</div></main>
+<footer><b>О нас:</b> Сервис доставки продуктов.<br>📞 +7 (952)148-88-467 | ✉️ info@greenapple.com</footer></body></html>

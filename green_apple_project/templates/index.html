@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Зелёное яблоко — Доставка продуктов</title><link rel="stylesheet" href="/static/css/style.css"></head>
+<body>
+<header><a class="logo" href="/">🍏 Зелёное яблоко</a><nav><a href="/#catalog">Каталог</a><a href="/sales">Акции</a><a href="/cart">Корзина ({{ cart_count }})</a>{% if user %}<a href="/orders">Мои заказы</a>{% if user.role == 'admin' %}<a href="/admin">Админ</a>{% endif %}<a href="/logout">Выйти</a>{% else %}<a href="/login">Войти</a>{% endif %}</nav></header>
+<main class="container">
+<div class="promo-block"><div class="promo-card"><b>Скидки на свежие продукты!</b><br>Выбирайте товары по выгодным ценам.</div><div class="promo-card"><b>Свежие продукты каждый день</b><br>Закажите продукты домой.</div></div>
+<div class="delivery">🚚 Доставка от {{ free_delivery }} ₽ — бесплатно, иначе 199 ₽</div>
+{% if request.session.get('message') %}<p class="notice">{{ request.session.pop('message') }}</p>{% endif %}
+<nav class="category-links" aria-label="Категории товаров"><a href="/">Все товары</a>{% for c in categories %}<a href="/category/{{ c.slug }}">{{ c.name }}</a>{% endfor %}</nav>
+<section id="catalog"><h2>{% if category_name %}{{ category_name }}{% else %}Каталог товаров{% endif %}</h2>
+<form class="filters" method="get" action="/"><input name="q" value="{{ q }}" placeholder="Найти товар"><select name="category"><option value="0">Все категории</option>{% for c in categories %}<option value="{{ c.id }}" {% if selected_category == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select><button class="btn">Найти</button></form>
+<div class="grid">{% for p in products %}<article class="card">{% if p.old_price and p.old_price > p.price %}<span class="badge">Скидка</span>{% endif %}<div class="img-plug">{% if p.image %}<img src="/static/{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% else %}🍏{% endif %}</div><h3>{{ p.name }}</h3><p>{{ p.weight or '' }}</p>{% if p.old_price and p.old_price > p.price %}<div><span class="old-price">{{ '%.0f'|format(p.old_price) }} ₽</span></div>{% endif %}<div class="price">{{ '%.2f'|format(p.price) }} ₽</div><p class="stock">{% if p.stock > 0 %}В наличии: {{ p.stock }}{% else %}Нет в наличии{% endif %}</p><form method="post" action="/cart/add/{{ p.id }}"><button class="btn" {% if p.stock <= 0 %}disabled{% endif %}>В корзину</button></form></article>{% else %}<p>По вашему запросу ничего не найдено.</p>{% endfor %}</div></section>
+</main><footer><b>О нас:</b> Сервис доставки продуктов.<br>📞 +7 (952)148-88-467 | ✉️ info@greenapple.com</footer></body></html>
